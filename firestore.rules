@@ -1,0 +1,108 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: {userId} (UID from Firebase Auth)
+// Fields:
+//   - name: string (required, 1-100 chars)
+//   - email: string (required, valid email)
+//   - timezone: string (optional)
+//   - focusHours: number (required, >= 0)
+//   - tasksDone: number (required, >= 0)
+//   - streak: number (required, >= 0)
+//   - lastStudyDate: string (optional, ISO date)
+//   - theme: string (required, one of ['light', 'dark', 'emerald', 'sunset', 'crimson'])
+//   - focusDuration: number (required, 1-120)
+//   - breakDuration: number (required, 1-60)
+//
+// Collection: tasks
+// Document ID: {taskId} (Auto-generated)
+// Fields:
+//   - userId: string (required, matches auth.uid)
+//   - title: string (required, 1-200 chars)
+//   - time: string (optional)
+//   - duration: string (optional)
+//   - priority: string (required, one of ['low', 'medium', 'high'])
+//   - completed: bool (required)
+//   - date: string (required, ISO date)
+//   - order: number (required)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidString(val, min, max) {
+      return val is string && val.size() >= min && val.size() <= max;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email', 'focusHours', 'tasksDone', 'streak', 'theme', 'focusDuration', 'breakDuration']) &&
+             isValidString(data.name, 1, 100) &&
+             isValidEmail(data.email) &&
+             data.focusHours is number && data.focusHours >= 0 &&
+             data.tasksDone is number && data.tasksDone >= 0 &&
+             data.streak is number && data.streak >= 0 &&
+             data.theme in ['light', 'dark', 'emerald', 'sunset', 'crimson'] &&
+             data.focusDuration is number && data.focusDuration >= 1 && data.focusDuration <= 120 &&
+             data.breakDuration is number && data.breakDuration >= 1 && data.breakDuration <= 60;
+    }
+
+    function isValidTask(data) {
+      return data.keys().hasAll(['userId', 'title', 'completed', 'date', 'order']) &&
+             data.userId == request.auth.uid &&
+             isValidString(data.title, 1, 200) &&
+             data.completed is bool &&
+             isValidString(data.date, 10, 30) &&
+             data.order is number;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidTask(request.resource.data);
+      allow update: if isDocOwner() && isValidTask(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

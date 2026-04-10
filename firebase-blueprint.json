@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profile",
+      "description": "Stores user focus data, streak, and preferences.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "User's display name" },
+        "email": { "type": "string", "format": "email", "description": "User's email" },
+        "timezone": { "type": "string", "description": "User's timezone" },
+        "focusHours": { "type": "number", "description": "Total focus hours accumulated" },
+        "tasksDone": { "type": "number", "description": "Total tasks completed" },
+        "streak": { "type": "number", "description": "Current consecutive study days" },
+        "lastStudyDate": { "type": "string", "description": "ISO date of last focus session" },
+        "theme": { "type": "string", "description": "Selected UI theme" },
+        "focusDuration": { "type": "number", "description": "Custom focus duration in minutes" },
+        "breakDuration": { "type": "number", "description": "Custom break duration in minutes" }
+      },
+      "required": ["name", "email", "focusHours", "tasksDone", "streak", "theme", "focusDuration", "breakDuration"]
+    },
+    "tasks": {
+      "title": "Task",
+      "description": "A study or work task.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner's UID" },
+        "title": { "type": "string", "description": "Task title" },
+        "time": { "type": "string", "description": "Scheduled time" },
+        "duration": { "type": "string", "description": "Duration string" },
+        "priority": { "type": "string", "enum": ["low", "medium", "high"], "description": "Task priority" },
+        "completed": { "type": "boolean", "description": "Completion status" },
+        "date": { "type": "string", "description": "ISO date for the task" },
+        "order": { "type": "number", "description": "Display order" }
+      },
+      "required": ["userId", "title", "completed", "date", "order"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profile document"
+    },
+    "/tasks/{taskId}": {
+      "schema": "tasks",
+      "description": "Individual task documents"
+    }
+  }
+}
