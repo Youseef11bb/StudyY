@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-headline: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-variant: var(--surface-variant);
+  
+  --color-primary: var(--primary);
+  --color-primary-dim: var(--primary-dim);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-dim: var(--secondary-dim);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-dim: var(--tertiary-dim);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  
+  --color-error: var(--error);
+  --color-error-dim: var(--error-dim);
+  --color-on-error: var(--on-error);
+  --color-error-container: var(--error-container);
+  --color-on-error-container: var(--on-error-container);
+  
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  
+  --color-inverse-surface: #0b082f;
+  --color-inverse-on-surface: #9c98c6;
+  --color-inverse-primary: #7387ff;
+}
+
+@layer base {
+  :root {
+    --surface: #f9f5ff;
+    --surface-dim: #d4cfff;
+    --surface-bright: #f9f5ff;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f3eeff;
+    --surface-container: #e9e5ff;
+    --surface-container-high: #e3dfff;
+    --surface-container-highest: #ddd9ff;
+    --surface-variant: #ddd9ff;
+    
+    --primary: #2444eb;
+    --primary-dim: #0934e0;
+    --on-primary: #f3f1ff;
+    --primary-container: #8999ff;
+    --on-primary-container: #001470;
+    
+    --secondary: #006859;
+    --secondary-dim: #005a4d;
+    --on-secondary: #c2ffef;
+    --secondary-container: #68fadd;
+    --on-secondary-container: #005d4f;
+    
+    --tertiary: #9b3f00;
+    --tertiary-dim: #883700;
+    --on-tertiary: #fff0ea;
+    --tertiary-container: #ff955e;
+    --on-tertiary-container: #562000;
+    
+    --error: #b41340;
+    --error-dim: #a70138;
+    --on-error: #ffefef;
+    --error-container: #f74b6d;
+    --on-error-container: #510017;
+    
+    --on-surface: #2c2a51;
+    --on-surface-variant: #5a5781;
+    --outline: #75729e;
+    --outline-variant: #aca8d7;
+  }
+
+  .theme-dark {
+    --surface: #1a192b;
+    --surface-dim: #141323;
+    --surface-bright: #2c2a51;
+    --surface-container-lowest: #0b082f;
+    --surface-container-low: #212038;
+    --surface-container: #2c2a51;
+    --surface-container-high: #383661;
+    --surface-container-highest: #454273;
+    --surface-variant: #454273;
+    
+    --primary: #8999ff;
+    --primary-dim: #7387ff;
+    --on-primary: #001470;
+    --primary-container: #2444eb;
+    --on-primary-container: #f3f1ff;
+    
+    --secondary: #68fadd;
+    --secondary-dim: #56ebcf;
+    --on-secondary: #00382f;
+    --secondary-container: #006859;
+    --on-secondary-container: #c2ffef;
+    
+    --tertiary: #ff955e;
+    --tertiary-dim: #ff7f36;
+    --on-tertiary: #4a1c00;
+    --tertiary-container: #9b3f00;
+    --on-tertiary-container: #fff0ea;
+    
+    --on-surface: #f3f1ff;
+    --on-surface-variant: #aca8d7;
+    --outline: #75729e;
+    --outline-variant: #5a5781;
+  }
+
+  .theme-emerald {
+    --primary: #006859;
+    --primary-dim: #005a4d;
+    --on-primary: #ffffff;
+    --primary-container: #68fadd;
+    --on-primary-container: #00201a;
+    --surface: #f4fbf9;
+    --surface-container-low: #e6f5f2;
+    --surface-container-lowest: #ffffff;
+    --on-surface: #00201a;
+  }
+
+  .theme-sunset {
+    --primary: #9b3f00;
+    --primary-dim: #883700;
+    --on-primary: #ffffff;
+    --primary-container: #ff955e;
+    --on-primary-container: #331200;
+    --surface: #fff8f5;
+    --surface-container-low: #ffece3;
+    --surface-container-lowest: #ffffff;
+    --on-surface: #331200;
+  }
+
+  .theme-crimson {
+    --primary: #b41340;
+    --primary-dim: #a70138;
+    --on-primary: #ffffff;
+    --primary-container: #f74b6d;
+    --on-primary-container: #3e0011;
+    --surface: #fff5f7;
+    --surface-container-low: #ffe6eb;
+    --surface-container-lowest: #ffffff;
+    --on-surface: #3e0011;
+  }
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.glass-effect {
+  background: color-mix(in srgb, var(--surface-container-lowest), transparent 20%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid color-mix(in srgb, var(--outline-variant), transparent 60%);
+  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.glass-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    transparent 41%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.timer-glow {
+  box-shadow: 0 0 60px -12px var(--color-primary);
+  opacity: 0.8;
+}
+
+.ambient-shadow {
+  box-shadow: 0 12px 32px -4px rgba(44, 42, 81, 0.08);
+}
