@@ -1,5 +1,8 @@
 name: Build APK
-on: push
+on: push 
+permissions:
+  contents: write
+  actions: write
 jobs:
   build:
     runs-on: ubuntu-latest
