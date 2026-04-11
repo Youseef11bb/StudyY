@@ -1,55 +1,89 @@
 import { motion } from 'motion/react';
 import { Flame, Play, Pause, SkipForward, RotateCcw, Activity, Timer } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react'; // ضفنا useRef
+import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '../context/AppContext';
+import { LocalNotifications } from '@capacitor/local-notifications'; // استيراد المكتبة
 
-// تجهيز ملف الصوت خارج المكون عشان ما يتكررش مع كل رندر
+// تجهيز ملف الصوت
 const alarmSound = new Audio('/alarm.mp3');
 
 export function FocusView() {
   const { addFocusTime, profile, updateProfile, timerState, setTimerState, t, sessionSeconds } = useAppContext();
   const { timeLeft, isPlaying, mode } = timerState;
 
-  // استخدمنا useRef عشان نراقب حالة انتهاء الوقت ونشغل الصوت مرة واحدة بس
   const hasAlerted = useRef(false);
+
+  // طلب الإذن عند فتح الصفحة لأول مرة
+  useEffect(() => {
+    LocalNotifications.requestPermissions();
+  }, []);
 
   useEffect(() => {
     if (timeLeft === 0 && isPlaying && !hasAlerted.current) {
-      // 1. تشغيل الصوت
-      alarmSound.play().catch(err => console.error("الصوت محتاج تفاعل أولاً:", err));
-      
-      // 2. اهتزاز الموبايل لمدة ثانية
+      // إرسال إشعار فوري بصوت المنبه عند انتهاء الوقت
+      LocalNotifications.schedule({
+        notifications: [
+          {
+            title: mode === 'focus' ? "انتهى وقت التركيز!" : "انتهى البريك!",
+            body: mode === 'focus' ? "عاش يا بطل، خد بريك دلوقتي." : "يلا نرجع نركز تاني!",
+            id: 2,
+            schedule: { at: new Date(Date.now()) }, // يظهر الآن
+            sound: 'alarm.mp3',
+            actionTypeId: "",
+            extra: null
+          }
+        ]
+      });
+
+      // اهتزاز الموبايل
       if (navigator.vibrate) {
-        navigator.vibrate(1000);
+        navigator.vibrate([500, 200, 500]);
       }
 
-      // 3. إظهار تنبيه
-      alert(mode === 'focus' ? t('focusingSession') + " خلص! خد بريك" : t('breakTime') + " خلص! ارجع للتركيز");
-      
       hasAlerted.current = true;
-      setTimerState({ isPlaying: false }); // إيقاف المؤقت
+      setTimerState({ isPlaying: false });
     }
 
-    // إعادة ضبط الحالة لما الوقت يرجع يشتغل تاني
     if (timeLeft > 0) {
       hasAlerted.current = false;
     }
   }, [timeLeft, isPlaying, mode, setTimerState, t]);
 
-  const toggleTimer = () => {
-    setTimerState({ isPlaying: !isPlaying });
+  const toggleTimer = async () => {
+    const newIsPlaying = !isPlaying;
+    setTimerState({ isPlaying: newIsPlaying });
+
+    if (newIsPlaying) {
+      // جدولة إشعار مستقبلي لضمان العمل في الخلفية (حتى لو التطبيق اتقفل)
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: "STUDYY",
+            body: mode === 'focus' ? "وقت المذاكرة خلص!" : "البريك خلص!",
+            id: 1,
+            schedule: { at: new Date(Date.now() + timeLeft * 1000) },
+            sound: 'alarm.mp3',
+          }
+        ]
+      });
+    } else {
+      // إلغاء الإشعار المجدول لو المستخدم وقف التايمر يدوي
+      await LocalNotifications.cancel({ notifications: [{ id: 1 }] });
+    }
   };
   
-  const resetTimer = () => {
+  const resetTimer = async () => {
     hasAlerted.current = false;
+    await LocalNotifications.cancel({ notifications: [{ id: 1 }] });
     setTimerState({ 
       isPlaying: false, 
       timeLeft: (mode === 'focus' ? profile.focusDuration : profile.breakDuration) * 60 
     });
   };
 
-  const skipTimer = () => {
+  const skipTimer = async () => {
     hasAlerted.current = false;
+    await LocalNotifications.cancel({ notifications: [{ id: 1 }] });
     if (mode === 'focus') {
       addFocusTime(profile.focusDuration - Math.floor(timeLeft / 60)); 
       setTimerState({ 
@@ -211,7 +245,6 @@ export function FocusView() {
 
       {/* Bento Stats */}
       <section className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Progress Card */}
         <div className="md:col-span-2 bg-surface-container-low rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4">
             <div className="space-y-1">
@@ -235,7 +268,6 @@ export function FocusView() {
           </div>
         </div>
 
-        {/* Focus Time Card */}
         <div className="bg-surface-container-highest rounded-[2rem] p-8 flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="bg-primary-container/30 p-3 rounded-2xl text-primary">
