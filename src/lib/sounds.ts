@@ -1,5 +1,5 @@
 export const SOUNDS = {
-  TIMER_END: 'https://cdn.pixabay.com/audio/2022/03/15/audio_783863486c.mp3', // Success bell
+  TIMER_END: 'alarm.mp3', // Success bell
   TASK_COMPLETE: 'https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3', // Pop/Click
   NOTIFICATION: 'https://cdn.pixabay.com/audio/2022/03/10/audio_c35078173b.mp3', // Soft chime
 };
