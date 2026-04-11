@@ -1,17 +1,47 @@
 import { motion } from 'motion/react';
 import { Flame, Play, Pause, SkipForward, RotateCcw, Activity, Timer } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react'; // ضفنا useRef
 import { useAppContext } from '../context/AppContext';
+
+// تجهيز ملف الصوت خارج المكون عشان ما يتكررش مع كل رندر
+const alarmSound = new Audio('/alarm.mp3');
 
 export function FocusView() {
   const { addFocusTime, profile, updateProfile, timerState, setTimerState, t, sessionSeconds } = useAppContext();
   const { timeLeft, isPlaying, mode } = timerState;
+
+  // استخدمنا useRef عشان نراقب حالة انتهاء الوقت ونشغل الصوت مرة واحدة بس
+  const hasAlerted = useRef(false);
+
+  useEffect(() => {
+    if (timeLeft === 0 && isPlaying && !hasAlerted.current) {
+      // 1. تشغيل الصوت
+      alarmSound.play().catch(err => console.error("الصوت محتاج تفاعل أولاً:", err));
+      
+      // 2. اهتزاز الموبايل لمدة ثانية
+      if (navigator.vibrate) {
+        navigator.vibrate(1000);
+      }
+
+      // 3. إظهار تنبيه
+      alert(mode === 'focus' ? t('focusingSession') + " خلص! خد بريك" : t('breakTime') + " خلص! ارجع للتركيز");
+      
+      hasAlerted.current = true;
+      setTimerState({ isPlaying: false }); // إيقاف المؤقت
+    }
+
+    // إعادة ضبط الحالة لما الوقت يرجع يشتغل تاني
+    if (timeLeft > 0) {
+      hasAlerted.current = false;
+    }
+  }, [timeLeft, isPlaying, mode, setTimerState, t]);
 
   const toggleTimer = () => {
     setTimerState({ isPlaying: !isPlaying });
   };
   
   const resetTimer = () => {
+    hasAlerted.current = false;
     setTimerState({ 
       isPlaying: false, 
       timeLeft: (mode === 'focus' ? profile.focusDuration : profile.breakDuration) * 60 
@@ -19,8 +49,9 @@ export function FocusView() {
   };
 
   const skipTimer = () => {
+    hasAlerted.current = false;
     if (mode === 'focus') {
-      addFocusTime(profile.focusDuration - Math.floor(timeLeft / 60)); // Add partial time
+      addFocusTime(profile.focusDuration - Math.floor(timeLeft / 60)); 
       setTimerState({ 
         isPlaying: false, 
         mode: 'break', 
@@ -46,8 +77,6 @@ export function FocusView() {
     : ((profile.breakDuration * 60 - timeLeft) / (profile.breakDuration * 60)) * 100;
     
   const liveFocusHours = profile.focusHours + (sessionSeconds / 3600);
-
-  const strokeDashoffset = 1200 - (1200 * progress) / 100;
 
   return (
     <motion.div
