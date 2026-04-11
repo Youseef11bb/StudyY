@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1080112067375:android:024de776a6bbaa623667da",
+        "mobilesdk_app_id": "1:1080112067375:android:cc3b0585e9a134d83667da",
         "android_client_info": {
-          "package_name": "io.ionic.starter"
+          "package_name": "com.yousef.study"
         }
       },
       "oauth_client": [],
