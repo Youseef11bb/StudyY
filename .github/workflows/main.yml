@@ -11,9 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      # خطوة إعداد Java 21 (دي اللي كانت ناقصة)
+      - name: set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 22  # حدثنا النسخة هنا لـ 22 عشان Capacitor يشتغل
+          node-version: 22
           
       - name: Clean and Install Dependencies
         run: |
